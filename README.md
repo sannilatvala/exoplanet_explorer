@@ -2,6 +2,8 @@
 
 An interactive dark-theme dashboard for exploring thousands of confirmed exoplanets. Built with Dash and Plotly.
 
+🌐 **Live App:** https://exoplanet-explorer-uzh9.onrender.com
+
 ## Features
 
 - **Scatter & Density tab**: Orbital distance vs planet radius, coloured by equilibrium temperature (Plasma scale), with a 2D density contour view
