@@ -81,7 +81,7 @@ def build_sidebar(all_methods, year_min, year_max):
             id="filter-year",
             min=year_min, max=year_max, step=1,
             value=[year_min, year_max],
-            marks={},
+            marks=None,
             tooltip={
                 "placement": "bottom",
                 "always_visible": False,
