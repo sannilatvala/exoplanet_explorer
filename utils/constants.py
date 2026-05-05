@@ -66,28 +66,19 @@ PTYPE_EXPLANATIONS = [
 ]
 
 METHOD_EXPLANATIONS = [
-    ("Transit",                   "#17BECF",
+    ("Transit", "#17BECF",
      "A planet passes in front of its star, dimming it slightly. "
-     "Kepler & TESS use this \u2014 it\u2019s why most known exoplanets were found this way."),
-    ("Radial Velocity",           "#E377C2",
-     "A planet\u2019s gravity makes its star wobble toward and away from us. "
-     "Detected as a Doppler shift \u2014 like a passing siren."),
-    ("Microlensing",              "#BCBD22",
+     "Kepler & TESS use this — it’s why most known exoplanets were found this way."),
+    ("Radial Velocity", "#E377C2",
+     "A planet’s gravity makes its star wobble toward and away from us. "
+     "Detected as a Doppler shift — like a passing siren."),
+    ("Microlensing", "#BCBD22",
      "A planet bends and briefly amplifies background starlight via gravity. "
      "Great for finding distant planets invisible by other means."),
-    ("Imaging",                   "#9467BD",
-     "The planet is photographed directly \u2014 very rare, since planets are "
+    ("Imaging", "#9467BD",
+     "The planet is photographed directly — very rare, since planets are "
      "billions of times fainter than their host stars."),
-    ("Pulsar Timing",             "#9467bd",
-     "Pulsars flash with clockwork precision; a planet nudges that timing. "
-     "The very first exoplanets were confirmed this way, in 1992."),
-    ("Transit Timing Variations", "#bcbd22",
-     "A hidden planet tugs on a known transiting planet, making its crossings "
-     "arrive early or late \u2014 revealing unseen companions."),
-    ("Astrometry",                "#17becf",
-     "A planet\u2019s gravity makes its star trace a tiny wobble across the sky. "
-     "Requires extremely precise positional measurements."),
-    ("Other",                     "#7F7F7F",
-     "Rarer techniques: Eclipse Timing Variations, Orbital Brightness "
-     "Modulation, Disk Kinematics, and Pulsation Timing Variations."),
+    ("Other", "#7F7F7F",
+     "Rarer techniques: Pulsar Timing, Transit Timing Variations, "
+     "Astrometry, Eclipse Timing Variations, and Orbital Brightness Modulation."),
 ]
