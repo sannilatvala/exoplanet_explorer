@@ -4,6 +4,7 @@ import plotly.graph_objects as go
 from utils.constants import CAT_ORDER, PTYPE_COLORS, DMETHOD_COLORS
 from utils.helpers import base_layout
 
+_LEGEND = dict(x=1.01, y=1, bgcolor="rgba(0,0,0,0)", font=dict(size=10))
 
 def _year_label(y):
     if pd.notna(y) and y < 2000:
@@ -54,10 +55,13 @@ def build_discovery_charts(filtered_df):
         marker_colors=[DMETHOD_COLORS.get(m, "#888") for m in pie_data["discoverymethod_mapped"]],
         textinfo="percent+label", textposition="inside",
         pull=[0.04] * len(pie_data),
-        showlegend=False,
+        showlegend=True,
         insidetextfont=dict(size=10),
     ))
-    fig_pie.update_layout(**base_layout(title="Share by Discovery Method"))
+    fig_pie.update_layout(
+    **base_layout(title="Share by Discovery Method",
+                  legend=dict(title="Method", **_LEGEND))
+)
 
     tyd = filtered_df.copy()
     tyd["yr_lbl"] = tyd["disc_year"].apply(_year_label)
@@ -96,8 +100,9 @@ def build_discovery_charts(filtered_df):
             hovertemplate=f"{method}: %{{y}}<extra></extra>",
         ))
     fig_type_method.update_layout(
-        **base_layout(title="Planet Types vs Discovery Methods",
-                      barmode="stack", showlegend=False),
+    **base_layout(title="Planet Types vs Discovery Methods",
+                  barmode="stack",
+                  legend=dict(title="Method", **_LEGEND)),
         xaxis=dict(title="Planet Type", categoryorder="array", categoryarray=CAT_ORDER),
         yaxis=dict(title="Count", gridcolor="#2a3a55"),
     )
