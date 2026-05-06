@@ -124,7 +124,7 @@ def build_discovery_charts(filtered_df):
 
     tyd = myd.copy()
     type_year = (
-        tyd.groupby(["yr_lbl", "pl_type", "discoverymethod_ui"], observed=False)
+        tyd.groupby(["yr_lbl", "pl_type"], observed=False)
         .size()
         .reset_index(name="count")
     )
@@ -134,17 +134,24 @@ def build_discovery_charts(filtered_df):
         key=lambda x: int(x),
     )
 
+    full_grid = pd.MultiIndex.from_product(
+        [yr_order, CAT_ORDER],
+        names=["yr_lbl", "pl_type"]
+    ).to_frame(index=False)
+
+    type_year_full = (
+        full_grid.merge(type_year, on=["yr_lbl", "pl_type"], how="left")
+        .fillna({"count": 0})
+    )
+
     fig_type_yr = go.Figure()
+
     for ptype in CAT_ORDER:
-        s = type_year[type_year["pl_type"] == ptype]
-        full = pd.DataFrame({"yr_lbl": yr_order}).merge(
-            s[s["pl_type"] == ptype][["yr_lbl", "count"]],
-            how="left"
-        ).fillna(0)
+        s = type_year_full[type_year_full["pl_type"] == ptype]
 
         fig_type_yr.add_trace(go.Bar(
-            x=full["yr_lbl"],
-            y=full["count"],
+            x=s["yr_lbl"],
+            y=s["count"],
             name=ptype,
             marker_color=PTYPE_COLORS.get(ptype, "#888"),
             offsetgroup=ptype,
