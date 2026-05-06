@@ -99,38 +99,6 @@ def build_scatter_info_panels():
         initially_open=True,
     )
 
-    scatter_help_content = html.Div([
-        html.P([
-            html.B("Scatter View: "),
-            "Each dot is one exoplanet. Its position shows how far from its star it orbits "
-            "(x-axis, in AU) and how large it is (y-axis, in Earth radii). "
-            "Colour shows the planet\u2019s equilibrium temperature \u2014 "
-            "dark purple = cold, bright yellow = very hot. "
-            "Grey dots have no temperature data. "
-            "The green dot marks Earth as a familiar reference point.",
-        ], style={"color": TEXT_SECONDARY, "fontSize": "0.8rem",
-                  "lineHeight": "1.6", "marginBottom": "8px"}),
-        html.P([
-            html.B("Density View: "),
-            "The same data shown as a heatmap \u2014 brighter regions contain more planets. "
-            "Useful for spotting where planets cluster in the distance\u2013size space.",
-        ], style={"color": TEXT_SECONDARY, "fontSize": "0.8rem",
-                  "lineHeight": "1.6", "marginBottom": "8px"}),
-        html.P([
-            html.B("Interaction tips: "),
-            "Hover over any point for details. Scroll to zoom, drag to pan. "
-            "Use the sidebar to filter by planet type, discovery method, or year. "
-            "Dashed horizontal lines mark the boundaries between planet size categories.",
-        ], style={"color": TEXT_SECONDARY, "fontSize": "0.8rem", "lineHeight": "1.6",
-                  "margin": "0"}),
-    ], style={"padding": "14px 16px"})
-
-    scatter_help = info_banner(
-        "scatter-help-toggle", "scatter-help-chevron", "scatter-help-body",
-        "\U0001f4c8", "HOW TO READ THIS PAGE", scatter_help_content,
-        initially_open=False,
-    )
-
     ptype_panel = info_banner(
         "ptype-explainer-toggle", "ptype-explainer-chevron", "ptype-explainer-body",
         "\U0001fa90", "WHAT ARE THESE PLANET TYPES?",
@@ -138,7 +106,7 @@ def build_scatter_info_panels():
         initially_open=False,
     )
 
-    return tool_intro, scatter_help, ptype_panel
+    return tool_intro, ptype_panel
 
 
 def build_discovery_info_panels():
@@ -149,41 +117,6 @@ def build_discovery_info_panels():
         initially_open=True,
     )
 
-    discovery_help_content = html.Div([
-        html.P([
-            html.B("Discoveries Over Time: "),
-            "Each coloured segment shows how many planets were found per year using a given "
-            "method. The huge spike around 2014\u201316 is when the Kepler mission released "
-            "thousands of transit discoveries.",
-        ], style={"color": TEXT_SECONDARY, "fontSize": "0.8rem",
-                  "lineHeight": "1.6", "marginBottom": "8px"}),
-        html.P([
-            html.B("Method Share: "),
-            "The pie shows what fraction of all known exoplanets were found by each method. "
-            "Transit dominates because space telescopes can screen thousands of stars at once.",
-        ], style={"color": TEXT_SECONDARY, "fontSize": "0.8rem",
-                  "lineHeight": "1.6", "marginBottom": "8px"}),
-        html.P([
-            html.B("Types per Year / Type vs Method: "),
-            "These panels show how different planet types were discovered over time and which "
-            "detection methods favour which planet sizes.",
-        ], style={"color": TEXT_SECONDARY, "fontSize": "0.8rem",
-                  "lineHeight": "1.6", "marginBottom": "8px"}),
-        html.P([
-            html.B("Interaction: "),
-            "Use sidebar filters (planet type, method, year range) to focus on subsets. "
-            "Click legend items in the charts to toggle individual series. "
-            "Hover for exact counts.",
-        ], style={"color": TEXT_SECONDARY, "fontSize": "0.8rem",
-                  "lineHeight": "1.6", "margin": "0"}),
-    ], style={"padding": "14px 16px"})
-
-    discovery_help = info_banner(
-        "discovery-help-toggle", "discovery-help-chevron", "discovery-help-body",
-        "\U0001f4c8", "HOW TO READ THIS PAGE", discovery_help_content,
-        initially_open=False,
-    )
-
     method_panel = info_banner(
         "method-explainer-toggle", "method-explainer-chevron", "method-explainer-body",
         "\U0001f4e1", "HOW ARE EXOPLANETS DISCOVERED?",
@@ -191,4 +124,4 @@ def build_discovery_info_panels():
         initially_open=False,
     )
 
-    return tool_intro, discovery_help, method_panel
+    return tool_intro, method_panel

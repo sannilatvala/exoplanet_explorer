@@ -16,7 +16,10 @@ def _section_header(title, subtitle=""):
             "fontWeight": "700", "marginBottom": "4px",
             "fontSize": "1rem", "letterSpacing": "0.05em",
         }),
-        html.P(subtitle, style={"color": TEXT_SECONDARY, "fontSize": "0.8rem", "margin": "0"}),
+        html.P(subtitle, style={
+            "color": TEXT_SECONDARY, "fontSize": "0.8rem",
+            "margin": "0", "lineHeight": "1.55",
+        }),
     ], style={"marginBottom": "14px"})
 
 
@@ -63,8 +66,6 @@ def register_callbacks(app, df):
     for _tid, _bid, _cid in [
         ("method-explainer-toggle", "method-explainer-body", "method-explainer-chevron"),
         ("ptype-explainer-toggle",  "ptype-explainer-body",  "ptype-explainer-chevron"),
-        ("scatter-help-toggle",     "scatter-help-body",     "scatter-help-chevron"),
-        ("discovery-help-toggle",   "discovery-help-body",   "discovery-help-chevron"),
     ]:
         @app.callback(
             Output(_bid, "style"),
@@ -125,18 +126,18 @@ def _build_scatter_tab(fdf, show_nan_temp, show_earth):
         },
     ) if nan_count > 0 else html.Div()
 
-    tool_intro, scatter_help, ptype_panel = build_scatter_info_panels()
+    tool_intro, ptype_panel = build_scatter_info_panels()
 
     return html.Div([
         tool_intro,
-        scatter_help,
         ptype_panel,
         html.Div([
             _view_label("Scatter View"),
             _section_header(
                 "Orbital Distance vs Planet Radius",
-                "Colour = equilibrium temperature (K). "
-                "Hover for details. Sidebar filters apply.",
+                "Each dot = one planet. X-axis = distance from star (AU). "
+                "Y-axis = planet size (Earth = 1). "
+                "Colour = temperature (purple = cold, yellow = hot)",
             ),
             nan_note,
             _chart_card(
@@ -152,7 +153,8 @@ def _build_scatter_tab(fdf, show_nan_temp, show_earth):
             _view_label("Density View"),
             _section_header(
                 "Where Do Planets Cluster?",
-                "Same axes as above \u2014 brighter = more planets in that region.",
+                "Same axes as the scatter plot. Brighter cells = more planets in that region. "
+                "Useful for spotting where planets concentrate in distance and size.",
             ),
             _chart_card(
                 dcc.Graph(
@@ -168,34 +170,43 @@ def _build_scatter_tab(fdf, show_nan_temp, show_earth):
 
 def _build_discovery_tab(fdf):
     fig_stack, fig_pie, fig_type_yr, fig_type_method = build_discovery_charts(fdf)
-    tool_intro, discovery_help, method_panel = build_discovery_info_panels()
+    tool_intro, method_panel = build_discovery_info_panels()
 
     return html.Div([
         tool_intro,
-        discovery_help,
         method_panel,
         html.Div([
             html.Div([
-                _section_header("Discoveries Over Time", "Stacked by detection method."),
+                _section_header(
+                    "Discoveries Over Time",
+                    "Confirmed planets per year by detection method, showing Kepler mission’s spike around 2014\u201316.",
+                ),
                 _chart_card(dcc.Graph(figure=fig_stack, config={"displayModeBar": False},
                                       style={"height": "320px"}), height="360px"),
             ], style={"flex": "6", "minWidth": "0"}),
             html.Div([
-                _section_header("Method Share", "Proportion of all confirmed planets."),
+                _section_header(
+                    "Method Share",
+                    "Fraction of confirmed planets found by each detection method",
+                ),
                 _chart_card(dcc.Graph(figure=fig_pie, config={"displayModeBar": False},
                                       style={"height": "320px"}), height="360px"),
             ], style={"flex": "4", "minWidth": "0"}),
         ], style={"display": "flex", "gap": "20px"}),
         html.Div([
             html.Div([
-                _section_header("Planet Types per Year",
-                                "Grouped bar: how type discoveries evolved over time."),
+                _section_header(
+                    "Planet Types per Year",
+                    "Confirmed planets per year by size, showing how discovery methods shaped findings.",
+                ),
                 _chart_card(dcc.Graph(figure=fig_type_yr, config={"displayModeBar": False},
                                       style={"height": "320px"}), height="360px"),
             ], style={"flex": "6", "minWidth": "0"}),
             html.Div([
-                _section_header("Type vs Method",
-                                "Which methods tend to find which kinds of planets."),
+                _section_header(
+                    "Planet Types vs Discovery Methods",
+                    "Which detection methods tend to find which planet sizes. ",
+                ),
                 _chart_card(dcc.Graph(figure=fig_type_method, config={"displayModeBar": False},
                                       style={"height": "320px"}), height="360px"),
             ], style={"flex": "4", "minWidth": "0"}),

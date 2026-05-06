@@ -1,6 +1,6 @@
 body {
-    background: #0b0e1a;
-    margin: 0;
+  background: #0b0e1a;
+  margin: 0;
 }
 
 .Select-control,
@@ -9,48 +9,48 @@ body {
 .Select-option,
 .VirtualizedSelectFocusedOption,
 .VirtualizedSelectOption {
-    background-color: #161d2e !important;
-    color: #e8eaf6 !important;
-    border-color: #1f2d45 !important;
+  background-color: #161d2e !important;
+  color: #e8eaf6 !important;
+  border-color: #1f2d45 !important;
 }
 
 .Select-placeholder,
 .Select-input input {
-    color: #8b9dc3 !important;
+  color: #8b9dc3 !important;
 }
 
 .rc-slider-track {
-    background-color: #4fd1c5 !important;
+  background-color: #4fd1c5 !important;
 }
 
 .rc-slider-handle {
-    border-color: #4fd1c5 !important;
-    background: #4fd1c5;
+  border-color: #4fd1c5 !important;
+  background: #4fd1c5;
 }
 
 .rc-slider-tooltip-inner {
-    background-color: #111827 !important;
-    color: #e8eaf6 !important;
-    border: 1px solid #4fd1c5 !important;
-    font-family: 'IBM Plex Mono', monospace !important;
-    font-size: 12px !important;
-    font-weight: 600 !important;
-    box-shadow: none !important;
+  background-color: #111827 !important;
+  color: #e8eaf6 !important;
+  border: 1px solid #4fd1c5 !important;
+  font-family: "IBM Plex Mono", monospace !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
 }
 
 .rc-slider-tooltip-arrow {
-    border-bottom-color: #111827 !important;
+  border-bottom-color: #111827 !important;
 }
 
 ::-webkit-scrollbar {
-    width: 6px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #0b0e1a;
+  background: #0b0e1a;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #1f2d45;
-    border-radius: 3px;
+  background: #1f2d45;
+  border-radius: 3px;
 }
