@@ -57,71 +57,23 @@ def _explanation_grid(items, min_width="200px"):
     ], style={"display": "flex", "flexWrap": "wrap", "gap": "10px", "padding": "16px"})
 
 
-def _tool_intro_content(scatter_mode=True):
-    hover_tip = (
-        "Hover over any point for details. Scroll to zoom; click and drag to pan."
-        if scatter_mode
-        else "Hover over any point for details. Click legend items to toggle series."
-    )
-    return html.Div([
-        html.P(
-            "Welcome to the Exoplanet Explorer \u2014 an interactive tool for exploring "
-            "thousands of confirmed planets discovered beyond our solar system.",
-            style={"color": TEXT_PRIMARY, "fontSize": "0.85rem",
-                   "marginBottom": "10px", "lineHeight": "1.6"},
-        ),
-        html.Div([
-            html.Div([
-                html.Span("\U0001f50e  ", style={"color": ACCENT}),
-                html.Span("Use the sidebar filters to narrow down planets by type, "
-                          "discovery method, or year of discovery.",
-                          style={"color": TEXT_SECONDARY, "fontSize": "0.8rem"}),
-            ], style={"marginBottom": "6px"}),
-            html.Div([
-                html.Span("\U0001f5b1\ufe0f  ", style={"color": ACCENT}),
-                html.Span(hover_tip,
-                          style={"color": TEXT_SECONDARY, "fontSize": "0.8rem"}),
-            ], style={"marginBottom": "6px"}),
-            html.Div([
-                html.Span("\U0001f4ca  ", style={"color": ACCENT}),
-                html.Span("Switch between tabs to explore different views of the data.",
-                          style={"color": TEXT_SECONDARY, "fontSize": "0.8rem"}),
-            ]),
-        ], style={"paddingLeft": "4px"}),
-    ], style={"padding": "14px 16px"})
-
-
 def build_scatter_info_panels():
-    tool_intro = info_banner(
-        "tool-intro-toggle", "tool-intro-chevron", "tool-intro-body",
-        "\u2139\ufe0f", "ABOUT THIS TOOL \u2014 HOW TO USE",
-        _tool_intro_content(scatter_mode=True),
-        initially_open=True,
-    )
-
+    """Returns (ptype_panel,) — a 1-tuple for unpacking consistency."""
     ptype_panel = info_banner(
         "ptype-explainer-toggle", "ptype-explainer-chevron", "ptype-explainer-body",
         "\U0001fa90", "WHAT ARE THESE PLANET TYPES?",
         _explanation_grid(PTYPE_EXPLANATIONS, min_width="200px"),
         initially_open=False,
     )
-
-    return tool_intro, ptype_panel
+    return (ptype_panel,)
 
 
 def build_discovery_info_panels():
-    tool_intro = info_banner(
-        "tool-intro-d-toggle", "tool-intro-d-chevron", "tool-intro-d-body",
-        "\u2139\ufe0f", "ABOUT THIS TOOL \u2014 HOW TO USE",
-        _tool_intro_content(scatter_mode=False),
-        initially_open=True,
-    )
-
+    """Returns (method_panel,) — a 1-tuple for unpacking consistency."""
     method_panel = info_banner(
         "method-explainer-toggle", "method-explainer-chevron", "method-explainer-body",
         "\U0001f4e1", "HOW ARE EXOPLANETS DISCOVERED?",
         _explanation_grid(METHOD_EXPLANATIONS, min_width="220px"),
         initially_open=False,
     )
-
-    return tool_intro, method_panel
+    return (method_panel,)

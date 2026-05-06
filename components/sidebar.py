@@ -2,6 +2,7 @@ from dash import html, dcc
 from utils.constants import (
     CAT_ORDER, PTYPE_COLORS, DMETHOD_COLORS, EARTH_COLOR,
     PANEL_BG, BORDER_COLOR, TEXT_PRIMARY, TEXT_SECONDARY, ACCENT, DARK_BG,
+    PTYPE_EXPLANATIONS, METHOD_EXPLANATIONS,
 )
 
 
@@ -33,6 +34,78 @@ _SIZE_ROWS = [
 ]
 
 
+def _tooltip_panel_entries(explanations):
+    """Build entry divs for the tooltip panel from (name, color, desc) tuples."""
+    entries = []
+    for i, (name, color, desc) in enumerate(explanations):
+        is_last = i == len(explanations) - 1
+        entries.append(
+            html.Div([
+                html.Div(style={
+                    "width": "8px", "height": "8px", "borderRadius": "50%",
+                    "background": color, "flexShrink": "0", "marginTop": "4px",
+                }),
+                html.Div([
+                    html.Div(name, style={
+                        "fontFamily": "'IBM Plex Mono', monospace",
+                        "fontSize": "0.78rem", "fontWeight": "700",
+                        "color": color, "marginBottom": "2px",
+                    }),
+                    html.P(desc, style={
+                        "fontFamily": "'IBM Plex Mono', monospace",
+                        "fontSize": "0.74rem", "color": TEXT_SECONDARY,
+                        "lineHeight": "1.5", "margin": "0",
+                    }),
+                ], style={"flex": "1"}),
+            ], style={
+                "display": "flex", "gap": "10px", "alignItems": "flex-start",
+                "padding": "8px 0",
+                "borderBottom": "none" if is_last else f"1px solid {BORDER_COLOR}",
+            })
+        )
+    return entries
+
+
+def _info_icon_with_tooltip(explanations):
+    """
+    Renders the i icon alongside a hidden .info-tooltip-panel sibling.
+
+    The panel is kept display:none in the DOM. tooltip_portal.js reads its
+    contents on mouseenter, clones it into <body> as position:fixed (escaping
+    all overflow ancestors), positions it via getBoundingClientRect(), and
+    removes the clone on mouseleave.
+    """
+    panel = html.Div(
+        _tooltip_panel_entries(explanations),
+        className="info-tooltip-panel",
+        style={"display": "none"},
+    )
+
+    icon = html.Span("i", className="info-tooltip-icon")
+
+    return html.Span(
+        [icon, panel],
+        className="info-tooltip-wrap",
+        style={
+            "display": "inline-flex", "alignItems": "center",
+            "marginLeft": "6px", "verticalAlign": "middle",
+            "position": "relative",
+        },
+    )
+
+
+def _field_label_with_tooltip(text, explanations):
+    """A filter section label with an inline i info icon."""
+    return html.Div([
+        html.Label(text, style={
+            "fontSize": "0.72rem", "color": TEXT_SECONDARY,
+            "letterSpacing": "0.08em", "textTransform": "uppercase",
+            "marginBottom": "0", "display": "inline",
+        }),
+        _info_icon_with_tooltip(explanations),
+    ], style={"display": "flex", "alignItems": "center", "marginBottom": "6px"})
+
+
 def build_sidebar(all_methods, year_min, year_max):
     method_options = [
         {
@@ -48,7 +121,7 @@ def build_sidebar(all_methods, year_min, year_max):
     return html.Div([
         _sidebar_label("FILTERS"),
 
-        _field_label("Planet Type"),
+        _field_label_with_tooltip("Planet Type", PTYPE_EXPLANATIONS),
         dcc.Checklist(
             id="filter-ptype",
             options=[{
@@ -65,7 +138,7 @@ def build_sidebar(all_methods, year_min, year_max):
 
         _hr(),
 
-        _field_label("Discovery Method"),
+        _field_label_with_tooltip("Discovery Method", METHOD_EXPLANATIONS),
         dcc.Checklist(
             id="filter-method",
             options=method_options,

@@ -46,7 +46,11 @@ def build_stats_strip(fdf):
         stat_card("Median Dist",
                   f"{med_dist:.3g} AU" if med_dist else "\u2014",
                   "in AU (1 AU = Earth\u2013Sun distance)", "\U0001f4e1"),
-        stat_card("Median Temp",
-                  f"{med_temp:.0f} K" if med_temp else "\u2014",
-                  "equilibrium temp. (planets w/ known data)", "\U0001f321\ufe0f"),
+        stat_card(
+            "Median Temp",
+            (f"{med_temp:.0f} K"
+            if med_temp else "\u2014"),
+            "average planet temperature",
+            "\U0001f321\ufe0f"
+        ),
     ]

@@ -1,6 +1,6 @@
 from dash import html, dcc
 from utils.constants import (
-    DARK_BG, PANEL_BG, BORDER_COLOR, TEXT_PRIMARY, TEXT_SECONDARY, ACCENT,
+    DARK_BG, PANEL_BG, CARD_BG, BORDER_COLOR, TEXT_PRIMARY, TEXT_SECONDARY, ACCENT,
 )
 
 
@@ -15,6 +15,26 @@ def _tab_style(selected=False):
         "letterSpacing": "0.12em",
         "padding": "10px 18px",
     }
+
+
+def _global_info_box():
+    """Static info panel — single headline-style message, no header, no icon."""
+    return html.Div(
+        html.P(
+            "Welcome to Exoplanet Explorer. Switch tabs to explore. "
+            "Sidebar filters update all charts. Hover for details. "
+            "Click legends to toggle.",
+            style={
+                "color": TEXT_PRIMARY, "fontSize": "0.92rem",
+                "fontWeight": "300", "letterSpacing": "0.02em",
+                "lineHeight": "1.65", "margin": "0",
+                "fontFamily": "'IBM Plex Mono', monospace",
+            },
+        ),
+        style={
+            "marginBottom": "20px",
+        },
+    )
 
 
 def build_layout(sidebar):
@@ -63,6 +83,7 @@ def build_layout(sidebar):
                                     style=_tab_style(), selected_style=_tab_style(selected=True)),
                         ],
                     ),
+                    _global_info_box(),
                     html.Div(id="tab-content"),
                 ], style={"flex": "1", "padding": "24px 24px 24px 20px", "minWidth": "0"}),
             ], style={

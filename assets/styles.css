@@ -54,3 +54,50 @@ body {
   background: #1f2d45;
   border-radius: 3px;
 }
+
+/* ── Info icon (ⓘ) ────────────────────────────────────────────────── */
+.info-tooltip-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: rgba(79, 209, 197, 0.1);
+  border: 1px solid rgba(79, 209, 197, 0.3);
+  color: #4fd1c5;
+  font-size: 0.58rem;
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 700;
+  cursor: help;
+  line-height: 1;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.info-tooltip-icon:hover {
+  background: rgba(79, 209, 197, 0.22);
+  border-color: #4fd1c5;
+}
+
+/* ── Tooltip panel (cloned into <body> by tooltip_portal.js) ─────── */
+/*
+ * The .info-tooltip-panel sibling stays display:none in the sidebar DOM.
+ * When JS clones it into <body> as #tooltip-portal-active, it overrides
+ * display to block and sets position:fixed with computed coordinates,
+ * so it is fully outside every overflow:hidden ancestor.
+ */
+#tooltip-portal-active {
+  background: #111827;
+  border: 1px solid #1f2d45;
+  border-radius: 10px;
+  padding: 14px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(79, 209, 197, 0.06);
+  width: 300px;
+  max-width: 90vw;
+}

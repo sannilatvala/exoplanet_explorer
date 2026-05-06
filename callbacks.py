@@ -6,7 +6,6 @@ from components.scatter import build_scatter
 from components.hexbin import build_hexbin
 from components.discovery import build_discovery_charts
 from components.metrics import build_stats_strip
-from components.info_sections import build_scatter_info_panels, build_discovery_info_panels
 
 
 def _section_header(title, subtitle=""):
@@ -47,36 +46,6 @@ def register_callbacks(app, df):
     )
     def update_year_label(yr):
         return f"{yr[0]} \u2014 {yr[1]}" if yr else ""
-
-    for _tid, _bid, _cid in [
-        ("tool-intro-toggle",   "tool-intro-body",   "tool-intro-chevron"),
-        ("tool-intro-d-toggle", "tool-intro-d-body", "tool-intro-d-chevron"),
-    ]:
-        @app.callback(
-            Output(_bid, "style"),
-            Output(_cid, "children"),
-            Input(_tid, "n_clicks"),
-            prevent_initial_call=True,
-        )
-        def _toggle_open(n, bid=_bid, cid=_cid):
-            if n and n % 2 == 1:
-                return {"display": "none"}, " \u25bc"
-            return {"display": "block"}, " \u25b2"
-
-    for _tid, _bid, _cid in [
-        ("method-explainer-toggle", "method-explainer-body", "method-explainer-chevron"),
-        ("ptype-explainer-toggle",  "ptype-explainer-body",  "ptype-explainer-chevron"),
-    ]:
-        @app.callback(
-            Output(_bid, "style"),
-            Output(_cid, "children"),
-            Input(_tid, "n_clicks"),
-            prevent_initial_call=True,
-        )
-        def _toggle_closed(n, bid=_bid, cid=_cid):
-            if n and n % 2 == 1:
-                return {"display": "block"}, " \u25b2"
-            return {"display": "none"}, " \u25bc"
 
     @app.callback(
         Output("stat-strip",  "children"),
@@ -126,18 +95,14 @@ def _build_scatter_tab(fdf, show_nan_temp, show_earth):
         },
     ) if nan_count > 0 else html.Div()
 
-    tool_intro, ptype_panel = build_scatter_info_panels()
-
     return html.Div([
-        tool_intro,
-        ptype_panel,
         html.Div([
             _view_label("Scatter View"),
             _section_header(
                 "Orbital Distance vs Planet Radius",
                 "Each dot = one planet. X-axis = distance from star (AU). "
                 "Y-axis = planet size (Earth = 1). "
-                "Colour = temperature (purple = cold, yellow = hot)",
+                "Colour = temperature (purple = cold, yellow = hot).",
             ),
             nan_note,
             _chart_card(
@@ -170,11 +135,7 @@ def _build_scatter_tab(fdf, show_nan_temp, show_earth):
 
 def _build_discovery_tab(fdf):
     fig_stack, fig_pie, fig_type_yr, fig_type_method = build_discovery_charts(fdf)
-    tool_intro, method_panel = build_discovery_info_panels()
-
     return html.Div([
-        tool_intro,
-        method_panel,
         html.Div([
             html.Div([
                 _section_header(
