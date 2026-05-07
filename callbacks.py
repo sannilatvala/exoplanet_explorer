@@ -67,7 +67,7 @@ def register_callbacks(app, df):
         if tab == "tab-scatter":
             content = _build_scatter_tab(fdf, show_nan_temp, show_earth)
         elif tab == "tab-discovery":
-            content = _build_discovery_tab(fdf)
+            content = _build_discovery_tab(fdf, ptypes, methods)
         else:
             content = html.Div("Select a tab above.", style={"color": TEXT_SECONDARY})
 
@@ -133,14 +133,18 @@ def _build_scatter_tab(fdf, show_nan_temp, show_earth):
     ])
 
 
-def _build_discovery_tab(fdf):
-    fig_stack, fig_pie, fig_type_yr, fig_type_method = build_discovery_charts(fdf)
+def _build_discovery_tab(fdf, active_ptypes=None, active_methods=None):
+    fig_stack, fig_pie, fig_type_yr, fig_type_method = build_discovery_charts(
+        fdf,
+        active_ptypes=active_ptypes,
+        active_methods=active_methods,
+    )
     return html.Div([
         html.Div([
             html.Div([
                 _section_header(
                     "Discoveries Over Time",
-                    "Confirmed planets per year by detection method, showing Kepler mission’s spike around 2014\u201316.",
+                    "Confirmed planets per year by detection method, showing Kepler mission's spike around 2014\u201316.",
                 ),
                 _chart_card(dcc.Graph(figure=fig_stack, config={"displayModeBar": False},
                                       style={"height": "320px"}), height="360px"),
