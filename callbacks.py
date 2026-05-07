@@ -153,7 +153,7 @@ def _build_scatter_tab(fdf, show_nan_temp, show_earth):
 
                 "Each dot = one planet. X-axis = distance from star (AU). "
                 "Y-axis = planet size (Earth = 1). "
-                "Colour = temperature (purple = cold, yellow = hot).",
+                "Colour = planet temperature (purple = cold, yellow = hot).",
             ),
 
             nan_note,
