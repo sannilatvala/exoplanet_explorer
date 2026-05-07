@@ -45,7 +45,7 @@ def register_callbacks(app, df):
         Input("filter-year", "value"),
     )
     def update_year_label(yr):
-        return f"{yr[0]} \u2014 {yr[1]}" if yr else ""
+        return f"{yr[0]} — {yr[1]}" if yr else ""
 
     @app.callback(
         Output("stat-strip",  "children"),
@@ -57,124 +57,256 @@ def register_callbacks(app, df):
         Input("filter-show-earth",    "value"),
         Input("tabs",                 "value"),
     )
-    def update_all(ptypes, methods, year_range, show_nan_temp_val, show_earth_val, tab):
-        fdf = filter_dataframe(df, ptypes, methods, year_range)
+    def update_all(
+        ptypes,
+        methods,
+        year_range,
+        show_nan_temp_val,
+        show_earth_val,
+        tab,
+    ):
+
+        fdf = filter_dataframe(
+            df,
+            ptypes,
+            methods,
+            year_range,
+        )
+
         show_nan_temp = "show" in (show_nan_temp_val or [])
-        show_earth    = "show" in (show_earth_val    or [])
+        show_earth = "show" in (show_earth_val or [])
 
         stats_strip = build_stats_strip(fdf)
 
         if tab == "tab-scatter":
-            content = _build_scatter_tab(fdf, show_nan_temp, show_earth)
+            content = _build_scatter_tab(
+                fdf,
+                show_nan_temp,
+                show_earth,
+            )
+
         elif tab == "tab-discovery":
-            content = _build_discovery_tab(df, fdf, ptypes, methods)
+
+            content = _build_discovery_tab(
+                full_df=df,
+                fdf=fdf,
+                active_ptypes=ptypes,
+                active_methods=methods,
+                year_range=year_range,
+            )
+
         else:
-            content = html.Div("Select a tab above.", style={"color": TEXT_SECONDARY})
+            content = html.Div(
+                "Select a tab above.",
+                style={"color": TEXT_SECONDARY},
+            )
 
         return stats_strip, content
 
 
 def _build_scatter_tab(fdf, show_nan_temp, show_earth):
-    nan_count = int(fdf["pl_eqt"].isna().sum()) if "pl_eqt" in fdf.columns else 0
+
+    nan_count = (
+        int(fdf["pl_eqt"].isna().sum())
+        if "pl_eqt" in fdf.columns
+        else 0
+    )
+
     nan_note = html.Div(
         [
-            html.Span("\u2139\ufe0f  ", style={"marginRight": "4px"}),
+            html.Span("ℹ️  ", style={"marginRight": "4px"}),
+
             html.Span(
                 f"{nan_count:,} planet{'s' if nan_count != 1 else ''} "
                 f"{'are' if nan_count != 1 else 'is'} missing temperature data. "
-                + ("Shown as grey points." if show_nan_temp
-                   else "Enable \u201cShow planets with unknown temperature\u201d "
-                        "in the sidebar to display them."),
+                + (
+                    "Shown as grey points."
+                    if show_nan_temp
+                    else (
+                        "Enable “Show planets with unknown temperature” "
+                        "in the sidebar to display them."
+                    )
+                ),
             ),
         ],
+
         style={
-            "fontSize": "0.76rem", "color": TEXT_SECONDARY,
-            "background": CARD_BG, "border": f"1px solid {BORDER_COLOR}",
-            "borderRadius": "8px", "padding": "10px 14px",
-            "marginBottom": "14px", "lineHeight": "1.5",
+            "fontSize": "0.76rem",
+            "color": TEXT_SECONDARY,
+            "background": CARD_BG,
+            "border": f"1px solid {BORDER_COLOR}",
+            "borderRadius": "8px",
+            "padding": "10px 14px",
+            "marginBottom": "14px",
+            "lineHeight": "1.5",
         },
     ) if nan_count > 0 else html.Div()
 
     return html.Div([
+
         html.Div([
+
             _view_label("Scatter View"),
+
             _section_header(
                 "Orbital Distance vs Planet Radius",
+
                 "Each dot = one planet. X-axis = distance from star (AU). "
                 "Y-axis = planet size (Earth = 1). "
                 "Colour = temperature (purple = cold, yellow = hot).",
             ),
+
             nan_note,
+
             _chart_card(
                 dcc.Graph(
-                    figure=build_scatter(fdf, show_nan_temp=show_nan_temp, show_earth=show_earth),
+                    figure=build_scatter(
+                        fdf,
+                        show_nan_temp=show_nan_temp,
+                        show_earth=show_earth,
+                    ),
+
                     config={"displayModeBar": False},
                     style={"height": "430px"},
                 ),
+
                 height="470px",
             ),
+
         ]),
+
         html.Div([
+
             _view_label("Density View"),
+
             _section_header(
                 "Where Do Planets Cluster?",
-                "Same axes as the scatter plot. Brighter cells = more planets in that region. "
-                "Useful for spotting where planets concentrate in distance and size.",
+
+                "Same axes as the scatter plot. "
+                "Brighter cells = more planets in that region. "
+                "Useful for spotting where planets concentrate "
+                "in distance and size.",
             ),
+
             _chart_card(
                 dcc.Graph(
                     figure=build_hexbin(fdf),
                     config={"displayModeBar": False},
                     style={"height": "430px"},
                 ),
+
                 height="470px",
             ),
+
         ]),
     ])
 
 
-def _build_discovery_tab(full_df, fdf, active_ptypes=None, active_methods=None):
-    fig_stack, fig_pie, fig_type_yr, fig_type_method = build_discovery_charts(
-        fdf,
-        active_ptypes=active_ptypes,
-        active_methods=active_methods,
-        full_df=full_df,
+def _build_discovery_tab(
+    full_df,
+    fdf,
+    active_ptypes=None,
+    active_methods=None,
+    year_range=None,
+):
+
+    fig_stack, fig_pie, fig_type_yr, fig_type_method = (
+        build_discovery_charts(
+            fdf,
+            active_ptypes=active_ptypes,
+            active_methods=active_methods,
+            full_df=full_df,
+            year_range=year_range,
+        )
     )
+
     return html.Div([
+
         html.Div([
+
             html.Div([
+
                 _section_header(
                     "Discoveries Over Time",
-                    "Confirmed planets per year by detection method, showing Kepler mission's spike around 2014\u201316.",
+
+                    "Confirmed planets per year by detection method, "
+                    "showing Kepler mission's spike around 2014–16.",
                 ),
-                _chart_card(dcc.Graph(figure=fig_stack, config={"displayModeBar": False},
-                                      style={"height": "320px"}), height="360px"),
+
+                _chart_card(
+                    dcc.Graph(
+                        figure=fig_stack,
+                        config={"displayModeBar": False},
+                        style={"height": "320px"},
+                    ),
+
+                    height="360px",
+                ),
+
             ], style={"flex": "6", "minWidth": "0"}),
+
             html.Div([
+
                 _section_header(
                     "Method Share",
                     "Fraction of confirmed planets found by each detection method",
                 ),
-                _chart_card(dcc.Graph(figure=fig_pie, config={"displayModeBar": False},
-                                      style={"height": "320px"}), height="360px"),
+
+                _chart_card(
+                    dcc.Graph(
+                        figure=fig_pie,
+                        config={"displayModeBar": False},
+                        style={"height": "320px"},
+                    ),
+
+                    height="360px",
+                ),
+
             ], style={"flex": "4", "minWidth": "0"}),
+
         ], style={"display": "flex", "gap": "20px"}),
+
         html.Div([
+
             html.Div([
+
                 _section_header(
                     "Planet Types per Year",
-                    "Confirmed planets per year by size, showing how discovery methods shaped findings.",
+
+                    "Confirmed planets per year by size, "
+                    "showing how discovery methods shaped findings.",
                 ),
-                _chart_card(dcc.Graph(figure=fig_type_yr, config={"displayModeBar": False},
-                                      style={"height": "320px"}), height="360px"),
+
+                _chart_card(
+                    dcc.Graph(
+                        figure=fig_type_yr,
+                        config={"displayModeBar": False},
+                        style={"height": "320px"},
+                    ),
+
+                    height="360px",
+                ),
+
             ], style={"flex": "6", "minWidth": "0"}),
+
             html.Div([
+
                 _section_header(
                     "Planet Types vs Discovery Methods",
-                    "Which detection methods tend to find which planet sizes. ",
+                    "Which detection methods tend to find which planet sizes.",
                 ),
-                _chart_card(dcc.Graph(figure=fig_type_method, config={"displayModeBar": False},
-                                      style={"height": "320px"}), height="360px"),
+
+                _chart_card(
+                    dcc.Graph(
+                        figure=fig_type_method,
+                        config={"displayModeBar": False},
+                        style={"height": "320px"},
+                    ),
+
+                    height="360px",
+                ),
+
             ], style={"flex": "4", "minWidth": "0"}),
+
         ], style={"display": "flex", "gap": "20px"}),
     ])
