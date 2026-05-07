@@ -67,7 +67,7 @@ def register_callbacks(app, df):
         if tab == "tab-scatter":
             content = _build_scatter_tab(fdf, show_nan_temp, show_earth)
         elif tab == "tab-discovery":
-            content = _build_discovery_tab(fdf, ptypes, methods)
+            content = _build_discovery_tab(df, fdf, ptypes, methods)
         else:
             content = html.Div("Select a tab above.", style={"color": TEXT_SECONDARY})
 
@@ -133,11 +133,12 @@ def _build_scatter_tab(fdf, show_nan_temp, show_earth):
     ])
 
 
-def _build_discovery_tab(fdf, active_ptypes=None, active_methods=None):
+def _build_discovery_tab(full_df, fdf, active_ptypes=None, active_methods=None):
     fig_stack, fig_pie, fig_type_yr, fig_type_method = build_discovery_charts(
         fdf,
         active_ptypes=active_ptypes,
         active_methods=active_methods,
+        full_df=full_df,
     )
     return html.Div([
         html.Div([

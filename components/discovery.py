@@ -5,6 +5,7 @@ from utils.constants import CAT_ORDER, PTYPE_COLORS, DMETHOD_COLORS
 from utils.helpers import base_layout
 
 _LEGEND = dict(x=1.01, y=1, bgcolor="rgba(0,0,0,0)", font=dict(size=10))
+_DISCOVERY_UIREVISION = "discovery-chart-axes-v3"
 
 ALLOWED_METHODS = [
     "Transit",
@@ -21,11 +22,28 @@ def _year_label(y):
     return str(int(y)) if pd.notna(y) else "Unknown"
 
 
-def _year_order(df):
-    return ["<2000"] + sorted(
-        [y for y in df["yr_lbl"].unique() if y != "<2000"],
-        key=lambda x: int(x),
-    )
+def _canonical_year_order(df):
+    """
+    Build the full year/category domain from a canonical dataframe.
+
+    This is intentionally independent from the sidebar-filtered dataframe so
+    that empty sidebar states do not collapse the axes.
+    """
+    if df is None or df.empty or "disc_year" not in df.columns:
+        return []
+
+    years = pd.to_numeric(df["disc_year"], errors="coerce").dropna()
+    if years.empty:
+        return []
+
+    years = years.astype(int)
+    order = []
+
+    if (years < 2000).any():
+        order.append("<2000")
+
+    order.extend(str(y) for y in sorted(years[years >= 2000].unique()))
+    return order
 
 
 def _normalize_method(m):
@@ -46,9 +64,39 @@ def _trace_visibility(category, active_set):
     return True if category in active_set else "legendonly"
 
 
-def build_discovery_charts(filtered_df, active_ptypes=None, active_methods=None):
+def _year_axis_layout(years):
+    return dict(
+        title="Year",
+        type="category",
+        tickangle=-45,
+        categoryorder="array",
+        categoryarray=years,
+        tickmode="array",
+        tickvals=years,
+        ticktext=years,
+        gridcolor="#2a3a55",
+    )
+
+
+def build_discovery_charts(filtered_df, active_ptypes=None, active_methods=None, full_df=None):
     """
     Build all four discovery charts.
+
+    Parameters
+    ----------
+    filtered_df : pd.DataFrame
+        Already sidebar-filtered dataframe (year + active selections applied).
+        Used for counts.
+    active_ptypes : list[str] | None
+        Planet types currently enabled in the sidebar.
+        Defaults to all CAT_ORDER entries when not supplied.
+    active_methods : list[str] | None
+        Discovery methods currently enabled in the sidebar.
+        Defaults to all ALLOWED_METHODS entries when not supplied.
+    full_df : pd.DataFrame | None
+        Canonical unfiltered dataframe used to preserve axis/category domains.
+        This prevents axes from collapsing when the sidebar filters remove all
+        visible rows.
     """
     if active_ptypes is None:
         active_ptypes = list(CAT_ORDER)
@@ -67,7 +115,10 @@ def build_discovery_charts(filtered_df, active_ptypes=None, active_methods=None)
     myd["yr_lbl"] = myd["disc_year"].apply(_year_label)
     myd = myd[myd["yr_lbl"] != "Unknown"]
 
-    all_years = _year_order(myd) if not myd.empty else []
+    axis_source = full_df if full_df is not None else filtered_df
+    all_years = _canonical_year_order(axis_source)
+    if not all_years:
+        all_years = _canonical_year_order(myd)
 
     method_year = (
         myd.groupby(["yr_lbl", "discoverymethod_ui"])
@@ -82,10 +133,10 @@ def build_discovery_charts(filtered_df, active_ptypes=None, active_methods=None)
 
     fig_stack = go.Figure()
     for method in ALLOWED_METHODS:
-        s = method_year[method_year["discoverymethod_ui"] == method]
+        s = method_year[method_year["discoverymethod_ui"] == method][["yr_lbl", "count"]]
         full = (
             pd.DataFrame({"yr_lbl": all_years})
-            .merge(s[["yr_lbl", "count"]], how="left")
+            .merge(s, how="left", on="yr_lbl")
             .fillna(0)
         ) if all_years else pd.DataFrame({"yr_lbl": [], "count": []})
 
@@ -104,13 +155,8 @@ def build_discovery_charts(filtered_df, active_ptypes=None, active_methods=None)
             barmode="stack",
             legend=dict(title="Method", x=1.01, y=1, bgcolor="rgba(0,0,0,0)"),
         ),
-        xaxis=dict(
-            title="Year",
-            tickangle=-45,
-            categoryorder="array",
-            categoryarray=all_years,
-            gridcolor="#2a3a55",
-        ),
+        uirevision=_DISCOVERY_UIREVISION,
+        xaxis=_year_axis_layout(all_years),
         yaxis=dict(title="Count", gridcolor="#2a3a55"),
     )
 
@@ -139,7 +185,8 @@ def build_discovery_charts(filtered_df, active_ptypes=None, active_methods=None)
             title="Share by Discovery Method",
             legend=dict(title="Method", **_LEGEND),
             hiddenlabels=inactive_methods,
-        )
+        ),
+        uirevision=_DISCOVERY_UIREVISION,
     )
 
     type_year = (
@@ -147,11 +194,8 @@ def build_discovery_charts(filtered_df, active_ptypes=None, active_methods=None)
         .size()
         .reset_index(name="count")
     )
-    yr_order = (["<2000"] + sorted(
-        [y for y in type_year["yr_lbl"].unique() if y != "<2000"],
-        key=lambda x: int(x),
-    )) if not type_year.empty else []
 
+    yr_order = all_years
     full_grid = pd.MultiIndex.from_product(
         [yr_order, CAT_ORDER],
         names=["yr_lbl", "pl_type"]
@@ -179,13 +223,8 @@ def build_discovery_charts(filtered_df, active_ptypes=None, active_methods=None)
             barmode="group",
             legend=dict(title="Planet Type", x=1.01, y=1, bgcolor="rgba(0,0,0,0)"),
         ),
-        xaxis=dict(
-            title="Year",
-            tickangle=-45,
-            categoryorder="array",
-            categoryarray=yr_order,
-            gridcolor="#2a3a55",
-        ),
+        uirevision=_DISCOVERY_UIREVISION,
+        xaxis=_year_axis_layout(yr_order),
         yaxis=dict(title="Count", gridcolor="#2a3a55"),
     )
 
@@ -222,10 +261,15 @@ def build_discovery_charts(filtered_df, active_ptypes=None, active_methods=None)
             barmode="stack",
             legend=dict(title="Method", **_LEGEND),
         ),
+        uirevision=_DISCOVERY_UIREVISION,
         xaxis=dict(
             title="Planet Type",
+            type="category",
             categoryorder="array",
-            categoryarray=CAT_ORDER,
+            categoryarray=list(CAT_ORDER),
+            tickmode="array",
+            tickvals=list(CAT_ORDER),
+            ticktext=list(CAT_ORDER),
         ),
         yaxis=dict(title="Count", gridcolor="#2a3a55"),
     )
