@@ -55,7 +55,6 @@ body {
   border-radius: 3px;
 }
 
-/* ── Info icon (ⓘ) ────────────────────────────────────────────────── */
 .info-tooltip-icon {
   display: inline-flex;
   align-items: center;
@@ -83,13 +82,6 @@ body {
   border-color: #4fd1c5;
 }
 
-/* ── Tooltip panel (cloned into <body> by tooltip_portal.js) ─────── */
-/*
- * The .info-tooltip-panel sibling stays display:none in the sidebar DOM.
- * When JS clones it into <body> as #tooltip-portal-active, it overrides
- * display to block and sets position:fixed with computed coordinates,
- * so it is fully outside every overflow:hidden ancestor.
- */
 #tooltip-portal-active {
   background: #111827;
   border: 1px solid #1f2d45;
